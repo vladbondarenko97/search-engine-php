@@ -4,7 +4,7 @@ if(isset($_POST['key']) && isset($_POST['url']) && isset($_POST['title']) && iss
 	$url = urldecode($_POST['url']);
 	$title = urldecode($_POST['title']);
 	$desc = urldecode($_POST['desc']);
-	if($key != '1337') {
+	if($key != '13371337') {
 		die('Authorization failed.');
 	}
 } else {

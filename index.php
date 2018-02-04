@@ -1,6 +1,7 @@
 <?php
 
 require('./config.php');
+
 $ip = $_SERVER['REMOTE_ADDR'];
 $custom_session = md5(date('m-d') . $ip);
 $_SESSION['mobile'] = 'true';
@@ -9,19 +10,18 @@ headerHTML('Crawler Search');
 
 ?>
 <div align="center">
-<h1><a onclick="javascript:home();" title="Home">CRAWLER SEARCH</a></h1>
-<input type="search" id="q" value="<?=@htmlentities($_GET['q']);?>" placeholder="Enter keywords here..." style="width:300px;" name="q" onkeyup="search();" autofocus="true" required maxlength="50"/>
-<script>
-/* Detect if iDevice */
+  <h1><a onclick="javascript:home();" title="Home">CRAWLER SEARCH</a></h1>
+  <input type="search" id="q" value="<?=@htmlentities($_GET['q']);?>" placeholder="Enter keywords here..." style="width:300px;" name="q" onkeyup="search();" autofocus="true" required maxlength="50"/>
+  <script>
+    /* Detect if iDevice */
+    if(navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
+      document.write('<input type="submit" value="Search" ontouchstart="submit(); return false;"/>');
+    } else {
+      document.write('<input type="submit" value="Search" onclick="submit(); return false;"/>');
+    }
 
-if(navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
-    document.write('<input type="submit" value="Search" ontouchstart="submit(); return false;"/>');
-} else {
-    document.write('<input type="submit" value="Search" onclick="submit(); return false;"/>');
-}
-
-</script>
-<input type="hidden" name="page"/>
+  </script>
+  <input type="hidden" name="page"/>
 </div>
 <div id="error" align="center"></div>
 <div id="page"><div align="center" style="margin:15%;">Thank you for trying Crawler Search. We are still in alpha development mode and there are not a lot of results in our database. Would you like to suggest a feature? Please e-mail the head-developer - <em>contactvlad1k@gmail.com</em>.<br/>
@@ -47,7 +47,7 @@ window.onload = checkHash();
 var page = document.getElementById('page');
 var error = document.getElementById('error');
 function home() {
-  document.getElementById('page').innerHTML = '<div align="center" style="margin:15%;">Thank you for trying Crawler Search. We are still in alpha development mode and there are not a lot of results in our database. Would you like to suggest a feature? Please e-mail the head-developer - <em>vlad@vlad.ga</em>.</div>';
+  document.getElementById('page').innerHTML = '<div align="center" style="margin:15%;">Thank you for trying Crawler Search. We are still in alpha development mode and there are not a lot of results in our database. Would you like to suggest a feature? Please e-mail the head-developer - <em>contactvlad1k@gmail.com</em>.</div>';
   document.title = 'Crawler Search';
   location.hash = '';
 }
@@ -90,6 +90,14 @@ function checkHash() {
   	}
    }
 }
+function getPage(url) {
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", url, false);
+    xmlHttp.send(null);
+    return xmlHttp.responseText;
+}
 
 function asearch(qword) {
 	qword = qword.replace(/\+/g,' ');
@@ -112,7 +120,7 @@ function autosize(ifrId){
   var doc = ifr.contentDocument ? ifr.contentDocument : ifr.contentWindow.document;
   var obj = ifr.style ? ifr.style : ifr;
   obj.height = doc.body.scrollHeight + "px";
-} 
+}
 
 function submit() {
     var page = document.getElementById('page');
@@ -139,14 +147,6 @@ function submit() {
     	location.hash = '#?q=' + plushash;
     	document.getElementById('q').focus();
     }
-}
-function getPage(url) {
-    var xmlHttp = null;
-
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", url, false);
-    xmlHttp.send(null);
-    return xmlHttp.responseText;
 }
 </script>
 </body>

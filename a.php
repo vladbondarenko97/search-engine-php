@@ -2,7 +2,7 @@
 // Encrypt = mcrypt_ecb(MCRYPT_DES, 'key', $id, MCRYPT_ENCRYPT);
 function get_link($hash) {
 	require('./config.php');
-	$key = 'key';
+	$key = '13371337';
 	$id = mcrypt_ecb(MCRYPT_DES, $key, $hash, MCRYPT_DECRYPT);
 	mysql_connect($db_host, $db_user, $db_password);
 	@mysql_select_db($db_database) or die('DB ERROR');
@@ -18,5 +18,5 @@ WHERE  url = '".$url."' ");
 if(isset($_GET['a'])) {
 	get_link(base64_decode($_GET['a']));
 	die();
-}	
+}
 ?>

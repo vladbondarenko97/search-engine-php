@@ -86,7 +86,7 @@ if ((!isset($_GET['p'])) || (!is_numeric($_GET['p'])) /*||
 ($_GET['p'] <= 0)*/ // exception handled later
     ) {
     $page = 1;
-    
+
 } else {
     $page = $_GET['p'];
 }
@@ -94,13 +94,13 @@ if ((!isset($_GET['p'])) || (!is_numeric($_GET['p'])) /*||
 if ((!is_numeric($limit)) || ($limit <= 0) || ($limit > 100)) {
     $limit = 10;
 }
-echo '<link rel="stylesheet" type="text/css" href='style.css" />';
+echo '<link rel="stylesheet" type="text/css" href="style.css" />';
 if (isset($_GET['q']) && $_GET['q'] != NULL) {
     $query = strtolower(trim($_GET['q']));
-    
+
     //kamil: im not sure if "while(strpos($s, '  ') !== false) str_replace($s, '  ', ' ');" isn't faster
     $query = preg_replace('/\\s+/', ' ', $query);
-    
+
     $dc = array(
         '/',
         '"',
@@ -118,7 +118,7 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         '_',
         '='
     );
-    
+
     $i;
     $query = str_replace($dc, '', $query, $i);
     if ($i > 0) {
@@ -128,29 +128,29 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
     }
     $query = trim($query);
     $query = htmlentities($query);
-    
+
     if ($query == NULL || strlen($query) <= 0 || strlen($query) >= 50) {
         if ($message != '') {
             echo errorHTML('Your query is empty.', 'center');
         }
-        
+
         die();
     } else {
         mysql_connect($db_host, $db_user, $db_password);
         //kamil: try not to use "@"
         @mysql_select_db($db_database) or die('DB ERROR');
-        
+
         $squery = '';
-        
+
         /*$squerys = array();
         $squerys[] = str_replace(' ', '%', $query);
-        
+
         $els = explode(' ', $query);
         foreach($els as $el){
         if(trim($el) == null) continue;
         $squerys[] = $el;
         }
-        
+
         foreach($squerys as $q){
         $q = str_replace('%', '!%', $q);
         $q = str_replace('_', '!_', $q);
@@ -158,7 +158,7 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         $squery .= " description LIKE '%$q%' OR";
         $squery .= " description LIKE '$q%' OR";
         }
-        
+
         foreach($squerys as $q){
         $q = str_replace('%', '!%', $q);
         $q = str_replace('_', '!_', $q);
@@ -166,16 +166,16 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         $squery .= " title LIKE '%$q' OR";
         $squery .= " title LIKE '$q%' OR";
         }
-        
+
         foreach($squerys as $q){
         $q = str_replace('%', '!%', $q);
         $q = str_replace('_', '!_', $q);
         $squery .= " url LIKE '%$q%' OR";
         $squery .= " url LIKE '%$q' OR";
         }
-        
+
         $squery = substr($squery, 0, -3);*/
-        
+
         $keywords  = explode(' ', $query);
         $dym       = '';
         $dym_clean = '';
@@ -191,7 +191,7 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         }
         $dym       = trim($dym);
         $dym_clean = trim($dym_clean);
-        
+
         $dym       = preg_replace('!\s+!', ' ', $dym);
         $dym_clean = preg_replace('!\s+!', ' ', $dym_clean);
         $dym_clean = str_replace(' ', '+', $dym_clean);
@@ -200,23 +200,23 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
             'url',
             'description'
         );
-        
+
         $keywords = array_unique($keywords);
         $squery .= '(';
         foreach ($fields as $field) {
             $squery .= '(';
             foreach ($keywords as $keyword) {
                 $squery .= '(';
-                
+
                 $keyword = str_replace('%', '!%', $keyword);
                 $keyword = str_replace('_', '!_', $keyword);
-                
+
                 /*for($i = 0; $i < strlen($keyword); ++$i){
                 $key = $keyword;
                 $key{$i} = '_';
                 $squery .= " $field LIKE '%$key' OR";
                 }*/
-                
+
                 $squery .= " $field LIKE '%$keyword' OR";
                 $squery .= " $field LIKE '%$keyword%' OR";
                 $squery .= " $field LIKE '$keyword%'";
@@ -227,9 +227,9 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         }
         $squery = substr($squery, 0, -3); // deleting last " OR"
         $squery .= ')';
-        
+
         /*$squery .= '(';
-        
+
         foreach($els as $q){
         $squery .= '(';
         $q = str_replace('%', '!%', $q);
@@ -240,9 +240,9 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         $squery .= ') AND';
         }
         $squery = substr($squery, 0, -4);
-        
+
         $squery .= ') OR (';
-        
+
         foreach($els as $q){
         $squery .= '(';
         $q = str_replace('%', '!%', $q);
@@ -253,9 +253,9 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         $squery .= ') AND';
         }
         $squery = substr($squery, 0, -4);
-        
+
         $squery .= ') OR (';
-        
+
         foreach($els as $q){
         $squery .= '(';
         $q = str_replace('%', '!%', $q);
@@ -266,14 +266,14 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         $squery .= ') AND';
         }
         $squery = substr($squery, 0, -4);
-        
+
         $squery .= ')';*/
-        
+
         $result = mysql_query("SELECT * FROM search WHERE $squery");
         $number = @mysql_numrows($result);
-        
+
         echo '<!--' . $squery . '!-->';
-        
+
         /*if($page > ceil($number / $limit)){
         $page = ceil($number / $limit);
         }*/
@@ -281,10 +281,10 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
         if ($message != '') {
             echo '<b>Info:</b> ' . $message . '<br/>';
         }
-        
+
         $show_results = true;
         echo '<span id="qtime"></span>';
-        
+
         if ($number == 0) {
             if ($message != '') {
                 echo '<b>Info:</b> ' . $message . '<br/>';
@@ -299,13 +299,13 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
 					<hr/>
 				</div>
 			';
-            
+
             $show_results = false;
         } elseif ($page > ceil($number / $limit) || $page < 1) {
             if ($message != '') {
                 echo '<b>Info:</b> ' . $message . '<br/>';
             }
-            
+
             echo '
 				<div>
 					<b>Invalid page number given</b><br/>
@@ -313,21 +313,21 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
 					<hr/>
 				</div>
 			';
-            
+
             $show_results = false;
         }
-        
+
         mysql_close();
-        
+
         $ret = array();
-        
+
         if ($show_results) {
             for ($i = ($page - 1) * $limit; $i < $number && $i < $limit + (($page - 1) * $limit); ++$i) {
                 $db_id          = mysql_result($result, $i, 'id');
                 $db_url         = mysql_result($result, $i, 'url');
                 $db_title       = mysql_result($result, $i, 'title');
                 $db_description = mysql_result($result, $i, 'description');
-                
+
                 $db_url         = str_replace('&amp;', '&', $db_url);
                 $biggest = max($keywords);
                 $db_description = str_replace('&nbsp;', ' ', $db_description);
@@ -337,7 +337,7 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
                 $db_description = rel_desc($db_description, $biggest).' <b>...</b> '.$non_rel;
                 $db_description = substr($db_description, 0, 255);
                 $db_title       = str_replace('&amp;', '&', $db_title);
-                
+
                 $ret[] = array(
                     'url' => $db_url,
                     'title' => $db_title,
@@ -345,7 +345,7 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
                     'id' => $db_id
                 );
             }
-            
+
             $ret = sort_result(explode(' ', $query), $ret);
             dump_result(explode(' ', $query), $ret, $page, $limit, $query);
             dump_pages($page, $limit, $number);
@@ -366,10 +366,10 @@ if (isset($_GET['q']) && $_GET['q'] != NULL) {
                 $otime == '0.01';
             }
             searchResultsHTML($query, $number, $otime);
-            
+
             if($dym != $query) echo $dym;
             echo $output;
-            
+
         }
     }
 }

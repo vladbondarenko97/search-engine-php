@@ -41,24 +41,24 @@ function contains($needle, $haystack) {
 
 function r2a($rel, $base){
 	// http://toolspot.org/relative-path-into-absolute-url.php
-	
+
 	if(strpos($rel, '//') === 0) {
 		return 'http:'.$rel;
 	}
-	
+
 	if(parse_url($rel, PHP_URL_SCHEME) != ''){
 		return $rel;
 	}
-	
+
 	if(@$rel[0] == '#' || @$rel[0] == '?'){
 		return $base.$rel;
 	}
-	
+
 	extract(parse_url($base));
 	$path = preg_replace('#/[^/]*$#',  '', $path);
-	
+
 	if(@$rel[0] ==  '/') $path = '';
-	
+
 	$abs = "$host$path/$rel";
 	$re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
 	for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
@@ -70,16 +70,16 @@ function extractLinks($url, $type = '0'){
     @$DOM = new DOMDocument();
     @$DOM->loadHTML($html);
     $a = @$DOM->getElementsByTagName('a');
-	
+
     foreach($a as $link){
     	$first4 = substr($link->getAttribute('href'), 0, 4);
-		
+
     	if($first4 != 'http' && $first4 != 'java'){
     		$output = r2a($link->getAttribute('href'), $url);
     	}else{
     		$output = $link->getAttribute('href');
     	}
-		
+
     	if($type == 0){
     		if(!contains('javascript:', $output) && $output != NULL){
         		echo $output.'<br />';
@@ -201,7 +201,7 @@ function loginHTML() {
 }
 
 function get_redirect_url($url) {
-    $redirect_url = null; 
+    $redirect_url = null;
 
     $url_parts = @parse_url($url);
     if(!$url_parts) return false;
@@ -211,9 +211,9 @@ function get_redirect_url($url) {
     $sock = fsockopen($url_parts['host'], (isset($url_parts['port']) ? (int)$url_parts['port'] : 80), $errno, $errstr, 30);
     if(!$sock) return false;
 
-    $request = "HEAD " . $url_parts['path'] . (isset($url_parts['query']) ? '?'.$url_parts['query'] : '') . " HTTP/1.1\r\n"; 
-    $request .= 'Host: ' . $url_parts['host'] . "\r\n"; 
-    $request .= "Connection: Close\r\n\r\n"; 
+    $request = "HEAD " . $url_parts['path'] . (isset($url_parts['query']) ? '?'.$url_parts['query'] : '') . " HTTP/1.1\r\n";
+    $request .= 'Host: ' . $url_parts['host'] . "\r\n";
+    $request .= "Connection: Close\r\n\r\n";
     fwrite($sock, $request);
     $response = '';
     while(!feof($sock)) $response .= fread($sock, 8192);
@@ -273,8 +273,8 @@ function dump_result($psearchs, $res, $page, $limit, $query = 0){
 		$query='';
 		$desc=$e['description'];
 		$id = $e['id'];
-		$encrypt = base64_encode(mcrypt_ecb(MCRYPT_DES, '1337', $id, MCRYPT_ENCRYPT));
-		$url = 'http://localhost/a.php?a='.urlencode($encrypt);
+		$encrypt = base64_encode(mcrypt_ecb(MCRYPT_DES, '13371337', $id, MCRYPT_ENCRYPT));
+		$url = 'http://localhost/search/a.php?a='.urlencode($encrypt);
 		echo '
 			<div>
 				<b>'.$n.'.</b> <a href="'.$url.'" target="_blank" onclick="return false; window.location.href='.$url.'">'.highlight_res($psearchs, $e['title']).'</a><br/>
@@ -288,51 +288,51 @@ function dump_result($psearchs, $res, $page, $limit, $query = 0){
 
 function dump_pages($page, $limit, $number){
 	$pages = ceil($number / $limit);
-	
+
 	// its pointless to echo pages numbers when theres only one page
 	if($pages == 1) {
 		echo '<br/>Try to reduce the number of keywords to increase the number of results.';
 		return 0;
 	}
-	
+
 	// checking if echo < with link or without
 	if($page > 1){
 		echo '<div><b><a href="?q='.htmlentities($_GET['q']).'&l='.$limit.'&p='.($page - 1).'">previous</a></b> ';
 	}else{
 		echo '<div>'; //.'<b>previous</b> ';
 	}
-	
+
 	$num_arm = 5;
-	
+
 	$ret = '';
 	$fn = false; // first shown number
 	$ln; // last shown number
 	for($i = $page - $num_arm; $i < $page + $num_arm; ++$i){
 		if($i < 1) continue;
 		if($i > $pages) continue;
-		
+
 		if($fn === false) $fn = $i;
 		$ln = $i;
-		
+
 		if($i == $page){
 			$ret .= ' <b>'.$i.'</b> ';
 		}else{
 			$ret .= ' <a href="?q='.htmlentities($_GET['q']).'&l='.$limit.'&p='.($i).'">'.$i.'</a> ';
 		}
 	}
-	
+
 	// if theres less pages than shown, echos "..."
 	if($fn > 1){
 		echo '...';
 	}
-	
+
 	echo $ret;
-	
+
 	// if theres more pages than shown, echos "..."
 	if($ln < $pages){
 		echo '...';
 	}
-	
+
 	// checking if echo > with link or without
 	if($page < $pages){
 		echo ' <b><a href="?q='.htmlentities($_GET['q']).'&l='.$limit.'&p='.($page + 1).'">next</a></b></div>';
@@ -343,14 +343,14 @@ function dump_pages($page, $limit, $number){
 
 function similarity($psearchs, $r){
 	$s = 0;
-	
+
 	foreach($psearchs as $p){
 		if($p == null) continue; //for spaces
 		$s += substr_count($r['url'], $p);
 		$s += substr_count($r['title'], $p);
 		$s += substr_count($r['description'], $p);
 	}
-	
+
 	return $s;
 }
 
@@ -362,11 +362,11 @@ function strlensort($a, $b){
 function highlight_res($psearchs, $text, $address = false){
 	if($address){
 		$text = strtolower($text);
-		
+
 		// use this instead:
 		usort($psearchs, 'strlensort');
 		$ret = '';
-		
+
 		for($i = 0; $i < strlen($text); ++$i){
 			$taken = false;
 			foreach($psearchs as $s){
@@ -378,21 +378,21 @@ function highlight_res($psearchs, $text, $address = false){
 					$i += strlen($s) - 1;
 				}
 			}
-			
+
 			if(!$taken){
 				$ret .= $text{$i};
 			}
 		}
-		
+
 		return $ret;
 	}
-	
+
 	$els = explode(' ', $text);
 	$ret = '';
-	
+
 	foreach($els as $el){
 		$taken = false;
-		
+
 		foreach($psearchs as $s){
 			if((stripos($el, $s) !== false) && (strlen($s) * 2 > strlen($el))){
 				$ret .= '<b>'.$el.'</b>'.' ';
@@ -400,19 +400,19 @@ function highlight_res($psearchs, $text, $address = false){
 				break;
 			}
 		}
-		
+
 		if(!$taken) {
 			$ret .= $el.' ';
 		}
 	}
-	
+
 	return $ret;
 }
 
 function sort_result($psearchs, $res){
 	$tmp = array();
 	$ret = array();
-	
+
 	foreach($res as $r){
 		$s = similarity($psearchs, $r);
 		a:
@@ -423,13 +423,13 @@ function sort_result($psearchs, $res){
 			$tmp[$s] = $r;
 		}
 	}
-	
+
 	krsort($tmp);
-	
+
 	foreach($tmp as $r) {
 		$ret[] = $r;
 	}
-	
+
 	return $ret;
 }
 
